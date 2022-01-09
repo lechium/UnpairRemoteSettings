@@ -1,6 +1,6 @@
 target = appletv
-THEOS_DEVICE_IP = bedroom.local
-DEBUG=1
+DEBUG=0
+THEOS_DEVICE_IP = game-room.local
 INSTALL_TARGET_PROCESSES = TVSettings
 
 include $(THEOS)/makefiles/common.mk

@@ -20,11 +20,22 @@
 @interface TVSettingsBluetoothInfoViewController : UIViewController
 - (id)_bluetoothDevice;
 - (id)bluetoothDevice; //tvOS 9 not sure if any newer versions have this var
+-(void)promptForUnpair:(id)sender;
+-(void)unpairRemote:(id)sender;
 @end
+
 %hook TVSettingsBluetoothInfoViewController
 
+%new - (void)promptForUnpair:(id)sender {
+     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Unpair Remote?" message:@"Are you sure you want to unpair this siri remote? Re-pairing may be extremely challenging." preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Unpair" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        [self unpairRemote:nil];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alertController animated:true completion:nil];
+}
+
 %new - (void)unpairRemote:(id)sender {
-    %log;
     //id btMan = [%c(TVSBluetoothManager) sharedInstance];
     id pMan = [%c(TVSPeripheralManager) sharedInstance];
     id btDevice = nil;
@@ -48,7 +59,6 @@
 }
 
 - (void)viewDidLoad {
-    %log;
     %orig;
     UIButton *unpairRemoteButton = [UIButton buttonWithType:UIButtonTypeSystem];
     unpairRemoteButton.translatesAutoresizingMaskIntoConstraints = false;
@@ -56,7 +66,7 @@
     [[self view] addSubview:unpairRemoteButton];
     [unpairRemoteButton.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:-300].active = true;
     [unpairRemoteButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-260].active = true;
-    [unpairRemoteButton addTarget:self action:@selector(unpairRemote:) forControlEvents:UIControlEventPrimaryActionTriggered];
+    [unpairRemoteButton addTarget:self action:@selector(promptForUnpair:) forControlEvents:UIControlEventPrimaryActionTriggered];
 }
 
 %end
